@@ -2,7 +2,7 @@ import os
 import shutil
 
 import numpy as np
-from Cherenkov_run_tuple import Cherenkov_run_tuple, \
+from .Cherenkov_run_tuple import Cherenkov_run_tuple, \
                                 multi_Cherenkov_run_tuple, \
                                 read_root_file_photon_generation
 import matplotlib.pyplot as plt
@@ -208,7 +208,10 @@ class gras_Cherenkov_runner():
 
     def initialise_output_gras_directory(self, spectrum_file_to_use, number_of_radiators=1):
         self.initialise_dir_and_copy_geom_and_mac_files(number_of_radiators)
-        shutil.copyfile(pkg_resources.resource_filename(__name__,spectrum_file_to_use),self.directory_to_run_in + os.path.basename(spectrum_file_to_use))
+        try:
+            shutil.copyfile(pkg_resources.resource_filename(__name__,spectrum_file_to_use),self.directory_to_run_in + os.path.basename(spectrum_file_to_use))
+        except FileNotFoundError:
+            shutil.copyfile(spectrum_file_to_use,self.directory_to_run_in + os.path.basename(spectrum_file_to_use))
 
     def initialise_dir_and_copy_geom_and_mac_files(self, number_of_radiators):
         try:

@@ -1,15 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import spacepy
 import os
 from uncertainties import ufloat, unumpy
 import datetime as dt
 import copy
 import seaborn as sns
 import geopandas as gpd
-import spectra_running_tools as SRT
-import sketch
+from . import spectra_running_tools as SRT
 from tqdm import tqdm
 
 import numpy as np
@@ -611,13 +609,3 @@ def plot_phd_modified(pulse_height_distribution,nbins=100,**xargs):
         plt.ylabel("events / photon count / second")
         plt.title("pulse height distribution")
         plt.legend(loc="center left",bbox_to_anchor=(1.1,0.5))
-
-global GLE21_spectrum
-GLE21_spectrum = SRT.particle_spectrum(particle_species=SRT.particle("proton"),
-                                        spectrum_file_path="GLE21spectrum_multipliedby1.csv",
-                                        incoming_particles_per_s_per_cm2=SRT.GLE21_integral_count_rate)
-
-global GLE05_spectrum
-GLE05_spectrum = SRT.particle_spectrum(particle_species=SRT.particle("proton"),
-                                        spectrum_file_path="GLE05spectrum_multipliedby1.csv",
-                                        incoming_particles_per_s_per_cm2=SRT.GLE05_integral_count_rate)

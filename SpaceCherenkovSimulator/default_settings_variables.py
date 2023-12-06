@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pkg_resources
-import spectra_running_tools as SRT
+from . import spectra_running_tools as SRT
 
 def convert_integral_values_to_differential(integral_DF):
 

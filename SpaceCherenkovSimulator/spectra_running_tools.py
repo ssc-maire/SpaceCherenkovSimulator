@@ -1,4 +1,4 @@
-from tools_for_Cherenkov_runs import gras_Cherenkov_runner, Cherenkov_gdml_geometry_generator, gras_single_energy_macro, gras_spectrum_macro, gras_isotropic_macro, gras_input_macro_file_generator, single_particle_gras_Cherenkov_runner
+from .tools_for_Cherenkov_runs import gras_Cherenkov_runner, Cherenkov_gdml_geometry_generator, gras_single_energy_macro, gras_spectrum_macro, gras_isotropic_macro, gras_input_macro_file_generator, single_particle_gras_Cherenkov_runner
 import os
 import numpy as np
 from CosRayModifiedISO import CosRayModifiedISO
