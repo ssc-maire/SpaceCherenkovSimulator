@@ -1,0 +1,6 @@
+include SpaceCherenkovSimulator/gdml_templates/*.gdml
+include SpaceCherenkovSimulator/IRENE8_input_data/*.txt
+include SpaceCherenkovSimulator/Analysis_macros/*.g4mac
+include SpaceCherenkovSimulator/photon_detection_efficiencies/*.csv
+include SpaceCherenkovSimulator/input_macro_templates/*.in
+include SpaceCherenkovSimulator/interplanetary_spectra/*.csv
