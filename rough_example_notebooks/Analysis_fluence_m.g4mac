@@ -1,0 +1,14 @@
+##Analysis Module FL
+####################
+/gras/analysis/fluence/addModule {FL}
+/gras/analysis/fluence/{FL}/addVolumeInterface {cube_phys} *  -1 -1
+/gras/analysis/fluence/{FL}/bookHistos True
+/gras/analysis/fluence/{FL}/bookHistosVsPrimary False
+/gras/analysis/fluence/{FL}/bookTuples True
+/gras/analysis/fluence/{FL}/insertParticle opticalphoton
+/gras/analysis/fluence/{FL}/bothWayTally True
+/gras/analysis/fluence/{FL}/detailedTuples True
+/gras/analysis/fluence/{FL}/particleTallyMode all
+/gras/analysis/fluence/{FL}/initialise
+/gras/histo/setHistoByName {FL}_fluence_opticalphoton 50 1.5 6.5 eV linear
+#

@@ -26,7 +26,7 @@ setup(
                                             "input_macro_templates/*.in",
                                             "interplanetary_spectra/*.csv",
                                          ]},
-    version='0.1.1',
+    version='0.2.0',
     description='Python library containing tools for simulating Cherenkov detector count rates in space.',
     long_description=long_description,
     long_description_content_type='text/markdown',

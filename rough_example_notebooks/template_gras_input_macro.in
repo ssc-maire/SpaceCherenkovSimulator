@@ -1,0 +1,54 @@
+/gras/physics/addPhysics em_standard
+/gras/physics/addPhysics G4OpticalPhysics
+
+/gras/physics/addPhysics elastic
+/gras/physics/addPhysics binary_had
+/gras/physics/addPhysics binary_ion
+/gras/physics/addPhysics decay
+/gras/physics/addPhysics stopping
+/gras/physics/addPhysics gamma_nuc
+/gras/physics/addPhysics raddecay
+
+/control/verbose 1
+/tracking/verbose 0
+/process/optical/verbose 1
+/run/verbose 0
+/control/cout/ignoreThreadsExcept 0
+#
+/gras/geometry/type gdml
+/gdml/file gdml_file_to_use.gdml
+/gdml/schema http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd
+
+/process/optical/processActivation Cerenkov True
+/process/optical/processActivation Scintillation False
+
+/run/initialize
+
+/control/execute Analysis.g4mac
+
+/gps/particle REPLACE_WITH_PARTICLE
+
+/gras/histo/fileName output_Cherenkov_data
+
+REPLACE_WITH_ENERGY_COMMANDS
+
+/gps/pos/type Surface
+/gps/pos/shape Sphere
+/gps/pos/radius 20 mm
+/gps/ang/type cos
+/gps/ang/maxtheta 90 deg
+
+REPLACE_WITH_DIRECTION_COMMANDS
+
+/gras/analysis/setNormalisationType PER_NB_EVENTS
+#/gras/analysis/setSourceSurfaceType AUTO
+#/gras/analysis/setSourceFluenceType FLUX
+#
+/tracking/verbose 0
+#/process/optical/cerenkov/setMaxBetaChange 1
+#/process/optical/cerenkov/setMaxPhotons  30
+#/process/optical/cerenkov/setTrackSecondariesFirst True
+#/process/optical/scintillation/setMaxPhotons  10
+/process/optical/scintillation/setTrackSecondariesFirst True
+#
+/run/beamOn REPLACE_WITH_PNUMBER

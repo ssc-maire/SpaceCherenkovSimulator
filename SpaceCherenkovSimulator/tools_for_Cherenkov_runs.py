@@ -101,6 +101,16 @@ class gras_input_macro_file_generator():
         with open(self.output_macro_file_path,"w") as output_macro_file:
             output_macro_file.write(output_file_string)
 
+class gras_input_macro_file_custom_file_selector(gras_input_macro_file_generator):
+
+    def __init__(self, path_to_input_macro_file:str):
+
+        with open("../" + path_to_input_macro_file,"r") as macro_file_to_use:
+            file_string = macro_file_to_use.read()
+
+        with open(self.output_macro_file_path,"w") as output_macro_file:
+            output_macro_file.write(file_string)
+
 class Cherenkov_gdml_geometry_generator():
 
     template_gdml_file_path = "template_gdml_file_to_use.gdml"
@@ -153,6 +163,16 @@ class Cherenkov_gdml_geometry_generator():
         with open(self.output_gdml_file_path,"w") as output_gdml_file:
             output_gdml_file.write(output_file_string)
 
+class Cherenkov_gdml_geometry_selector(Cherenkov_gdml_geometry_generator):
+
+    def __init__(self, path_to_input_gdml_file:str):
+
+        with open("../" + path_to_input_gdml_file,"r") as gdml_file_to_use:
+            file_string = gdml_file_to_use.read()
+
+        with open(self.output_gdml_file_path,"w") as output_gdml_file:
+            output_gdml_file.write(file_string)
+
 class gras_Cherenkov_runner():
 
     directory_to_run_in = "run_directory/"
@@ -166,9 +186,15 @@ class gras_Cherenkov_runner():
                  aluminium_thickness_in_mm=5, tantalum_thickness_in_mm=0.5,
                  radiator_geometry="cube",
                  number_of_radiators=1,
+                 custom_macro_file=None,
+                 custom_gdml_file=None,
                  **kwargs):
 
-        self.initialise_running_directory_and_macro(number_of_particles, particle_type, spectrum_file_to_use, number_of_radiators)
+        self.initialise_running_directory_and_macro(number_of_particles, 
+                                                    particle_type, 
+                                                    spectrum_file_to_use, 
+                                                    number_of_radiators, 
+                                                    custom_macro_file=custom_macro_file)
 
         try:
             self.setup_input_variables(incoming_particles_per_s, 
@@ -176,7 +202,8 @@ class gras_Cherenkov_runner():
                                        aluminium_thickness_in_mm, 
                                        tantalum_thickness_in_mm, 
                                        radiator_geometry, 
-                                       number_of_radiators)
+                                       number_of_radiators,
+                                       custom_gdml_file=custom_gdml_file)
             
             self.outputted_tuple = self.calculate_Cherenkov_tuple(number_of_particles,number_of_radiators,**kwargs)
 
@@ -185,23 +212,35 @@ class gras_Cherenkov_runner():
         finally:
             os.chdir("..")
 
-    def setup_input_variables(self, incoming_particles_per_s, verbose_output, aluminium_thickness_in_mm, tantalum_thickness_in_mm, radiator_geometry, number_of_radiators=1):
+    def setup_input_variables(self, incoming_particles_per_s, verbose_output, aluminium_thickness_in_mm, tantalum_thickness_in_mm, radiator_geometry, number_of_radiators=1, custom_gdml_file=None):
         self.incoming_particles_per_s = incoming_particles_per_s
         self.verbose_output = verbose_output
-        self.generated_geometry = Cherenkov_gdml_geometry_generator(aluminium_thickness_in_mm,
-                                                                    tantalum_thickness_in_mm,
-                                                                    radiator_geometry=radiator_geometry,
-                                                                    number_of_radiators=number_of_radiators)
+        if custom_gdml_file is None:
+            self.generated_geometry = Cherenkov_gdml_geometry_generator(aluminium_thickness_in_mm,
+                                                                        tantalum_thickness_in_mm,
+                                                                        radiator_geometry=radiator_geometry,
+                                                                        number_of_radiators=number_of_radiators)
+        else:
+            self.generated_geometry = Cherenkov_gdml_geometry_selector(custom_gdml_file)
 
-    def initialise_running_directory_and_macro(self, number_of_particles, particle_type, spectrum_file_to_use, number_of_radiators=1):
+    def initialise_running_directory_and_macro(self, 
+                                               number_of_particles, 
+                                               particle_type, 
+                                               spectrum_file_to_use, 
+                                               number_of_radiators=1,
+                                               custom_macro_file=None):
         self.initialise_output_gras_directory(spectrum_file_to_use, number_of_radiators)
         os.chdir(self.directory_to_run_in)
 
         try:
-            self.generated_macro = gras_input_macro_file_generator(number_of_particles, 
-                                                                   particle_type,
-                                                                   gras_spectrum_macro(spectrum_file_to_use),
-                                                                   gras_isotropic_macro())
+            if custom_macro_file is None:
+                self.generated_macro = gras_input_macro_file_generator(number_of_particles, 
+                                                                    particle_type,
+                                                                    gras_spectrum_macro(spectrum_file_to_use),
+                                                                    gras_isotropic_macro())
+            else:
+                self.generated_macro = gras_input_macro_file_custom_file_selector(custom_macro_file)
+
         except Exception as failed_exception:
             os.chdir("..")
             raise failed_exception
@@ -283,20 +322,25 @@ class single_particle_gras_Cherenkov_runner(gras_Cherenkov_runner):
                  aluminium_thickness_in_mm=5, tantalum_thickness_in_mm=0.5,
                  radiator_geometry="cube",
                  number_of_radiators=1,
+                 custom_macro_file=None,
+                 custom_gdml_file=None,
                  **kwargs):
         
-        self.initialise_running_directory_and_macro(number_of_particles, particle_type, energy_in_MeV, number_of_radiators)
+        self.initialise_running_directory_and_macro(number_of_particles, particle_type, energy_in_MeV, number_of_radiators,custom_macro_file=custom_macro_file)
 
-        self.setup_input_variables(incoming_particles_per_s, verbose_output, aluminium_thickness_in_mm, tantalum_thickness_in_mm, radiator_geometry, number_of_radiators)
+        self.setup_input_variables(incoming_particles_per_s, verbose_output, aluminium_thickness_in_mm, tantalum_thickness_in_mm, radiator_geometry, number_of_radiators,custom_gdml_file=custom_gdml_file)
         
         self.outputted_tuple = self.calculate_Cherenkov_tuple(number_of_particles, number_of_radiators,**kwargs)
 
         os.chdir("..")
 
-    def initialise_running_directory_and_macro(self, number_of_particles, particle_type, energy_in_MeV, number_of_radiators=1):
+    def initialise_running_directory_and_macro(self, number_of_particles, particle_type, energy_in_MeV, number_of_radiators=1,custom_macro_file=None):
         self.initialise_dir_and_copy_geom_and_mac_files(number_of_radiators)
         os.chdir(self.directory_to_run_in)
-        self.generated_macro = gras_input_macro_file_generator(number_of_particles, particle_type,gras_single_energy_macro(energy_in_MeV),gras_isotropic_macro())
+        if not custom_macro_file is None:
+            self.generated_macro = gras_input_macro_file_generator(number_of_particles, particle_type,gras_single_energy_macro(energy_in_MeV),gras_isotropic_macro())
+        else:
+            self.generated_macro = gras_input_macro_file_custom_file_selector(custom_macro_file)
 
 @mem.cache
 def wrapper_gras_Cherenkov_runner(**xargs):

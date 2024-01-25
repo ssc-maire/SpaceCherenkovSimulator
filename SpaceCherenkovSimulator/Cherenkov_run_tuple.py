@@ -77,10 +77,13 @@ def create_root_bash_script(root_file_relative_path):
 
     return name_of_bash_script
 
-photodetector_efficiency = np.loadtxt(pkg_resources.resource_filename(__name__,'photon_detection_efficiencies/BC_PDE.csv'), 
+photodetector_efficiency_BC = np.loadtxt(pkg_resources.resource_filename(__name__,'photon_detection_efficiencies/BC_PDE.csv'), 
                                       delimiter=',', dtype='float' )
-#photodetector_efficiency_interp = interp1d(photodetector_efficiency[:,0],photodetector_efficiency[:,1]/100.,bounds_error=False,fill_value='extrapolate')
-photodetector_efficiency_interp = interp1d(photodetector_efficiency[:,0],photodetector_efficiency[:,1]/100.,bounds_error=False,fill_value=0.0)
+photodetector_efficiency_interp_BC = interp1d(photodetector_efficiency_BC[:,0],photodetector_efficiency_BC[:,1]/100.,bounds_error=False,fill_value=0.0)
+
+photodetector_efficiency_SiPM = np.loadtxt(pkg_resources.resource_filename(__name__,'photon_detection_efficiencies/SiPM_PDE.csv'), 
+                                      delimiter=',', dtype='float' )
+photodetector_efficiency_interp_SiPM = interp1d(photodetector_efficiency_BC[:,0],photodetector_efficiency_BC[:,1]/100.,bounds_error=False,fill_value=0.0)
 
 # the PDE of SiPM
 # def get_pde(lamb):
@@ -271,7 +274,8 @@ class Cherenkov_run_tuple():
                  incoming_particles_per_second=1,
                  number_of_events_simulated = None, 
                  save_DF_of_output_hits = False,
-                 threshold_primary_energy=None):
+                 threshold_primary_energy=None,
+                 use_experiment_PDE=False):
 
         self.Cherenkov_run_label = Cherenkov_run_label
         self.incoming_particles_per_second = incoming_particles_per_second
@@ -290,7 +294,8 @@ class Cherenkov_run_tuple():
 
         print("successfully read in data...")
 
-        generated_photons_DF = self.add_more_columns_to_generated_photons_DF(generated_photons_DF)
+        generated_photons_DF = self.add_more_columns_to_generated_photons_DF(generated_photons_DF,
+                                                                             use_experiment_PDE=use_experiment_PDE)
         print("assigned wavelengths and detector detection probabilities...")
 
         self.determine_pulse_height_distributions(generated_photons_DF)
@@ -326,7 +331,13 @@ class Cherenkov_run_tuple():
         return {"primaries":len(self.primary_particle_Cherenkov_tuple.generated_photons_DF)/len(generated_photons_DF),
                 "secondaries":len(self.secondary_particle_Cherenkov_tuple.generated_photons_DF)/len(generated_photons_DF)}
 
-    def add_more_columns_to_generated_photons_DF(self,generated_photons_DF):
+    def add_more_columns_to_generated_photons_DF(self,generated_photons_DF, use_experiment_PDE=False):
+
+        if use_experiment_PDE is True:
+            photodetector_efficiency_interp = photodetector_efficiency_interp_SiPM
+        else:
+            photodetector_efficiency_interp = photodetector_efficiency_interp_BC
+
         generated_photons_DF["wavelength_nm"] = self.get_photon_wavelength_nm(generated_photons_DF["total_energy"]*1e6)
         if len(generated_photons_DF) > 0:
             generated_photons_DF["Si_detection_probability"] = photodetector_efficiency_interp(generated_photons_DF["wavelength_nm"])
@@ -344,8 +355,11 @@ class Cherenkov_run_tuple():
 
         return lamb_in_nm
     
-    def random_reject_pde(wavelength_nm):
-        pde_for_wavelength = photodetector_efficiency_interp(wavelength_nm)
+    def random_reject_pde(wavelength_nm, use_experiment_PDE=False):
+        if use_experiment_PDE is True:
+            pde_for_wavelength = photodetector_efficiency_interp_SiPM(wavelength_nm)
+        else:
+            pde_for_wavelength = photodetector_efficiency_interp_BC(wavelength_nm)
         accept_or_reject_choice = np.random.choice([0,1],
                                                     p=[1-pde_for_wavelength,pde_for_wavelength])
         return accept_or_reject_choice
@@ -364,12 +378,21 @@ class Cherenkov_run_tuple():
 
 class multi_Cherenkov_run_tuple(Cherenkov_run_tuple):
 
-    def __init__(self, file_path:str, Cherenkov_run_label = None,incoming_particles_per_second=1,number_of_events_simulated = None,threshold_primary_energy=None, save_DF_of_output_hits=False):
+    def __init__(self, 
+                 file_path:str, 
+                 Cherenkov_run_label = None,
+                 incoming_particles_per_second=1,
+                 number_of_events_simulated = None,
+                 threshold_primary_energy=None, 
+                 save_DF_of_output_hits=False,
+                 use_experiment_PDE=False):
+        
         self.Cherenkov_run_label = Cherenkov_run_label
         self.incoming_particles_per_second = incoming_particles_per_second
         self.number_of_events_simulated = number_of_events_simulated
         self.threshold_primary_energy = threshold_primary_energy
         self.save_DF_of_output_hits = save_DF_of_output_hits
+        self.use_experiment_PDE = use_experiment_PDE
     
         self.hits, self.output_tuples, self.coincidence_tuple_dictionary = self.construct_hits_dictionary(file_path)
 
@@ -392,12 +415,14 @@ class multi_Cherenkov_run_tuple(Cherenkov_run_tuple):
                                                                incoming_particles_per_second = self.incoming_particles_per_second, 
                                                                Cherenkov_run_label=self.Cherenkov_run_label, 
                                                                number_of_events_simulated = self.number_of_events_simulated,
-                                                               save_DF_of_output_hits = self.save_DF_of_output_hits)
+                                                               save_DF_of_output_hits = self.save_DF_of_output_hits,
+                                                               use_experiment_PDE=self.use_experiment_PDE)
 
             if '_tuple_fluence;1' in key :
                 df = rfile[key].arrays(["event","pdg","primarykine","primarymomx","primarymomy","primarymomz"],library='pd')
                 df.rename(columns={'event':'event_id','pdg':'particle_id','primarykine':'primary_kinetic_energy'},inplace=True)
-                self.generated_primary_DF = df.query("`particle_id` == 2212.0").drop_duplicates(subset=["event_id"])
+                primary_particle_id = df.iloc[0]["particle_id"]
+                self.generated_primary_DF = df.query(f"`particle_id` == {primary_particle_id}").drop_duplicates(subset=["event_id"])
                 
                 self.process_fluence_DF(df)
                 hits[str(key)+'_PR'] = self.generated_primary_DF

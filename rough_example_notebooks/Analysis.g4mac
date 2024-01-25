@@ -1,0 +1,30 @@
+##Analysis Module FL
+####################
+#/gras/analysis/fluence/addModule FL
+#/gras/analysis/fluence/FL/addVolumeInterface cherenkovRadiator_phys cherenkovVol_phys -1 -1
+#/gras/analysis/fluence/FL/bookHistos True
+#/gras/analysis/fluence/FL/bookHistosVsPrimary True
+#/gras/analysis/fluence/FL/bookTuples True
+#/gras/analysis/fluence/FL/particleTallyMode all
+#/gras/analysis/fluence/FL/detailedTuples True
+#/gras/analysis/fluence/FL/insertParticle opticalphoton
+#/gras/analysis/fluence/FL/bothWayTally False
+#/gras/analysis/fluence/FL/initialise
+#/gras/histo/setHistoByName FL_fluence_opticalphoton 50 0 5.0 eV linear
+
+#
+#/gras/analysis/tid/addModule TID
+#/gras/analysis/tid/TID/addVolume cherenkovRadiator_phys -1
+##/gras/analysis/tid/TID/addVolumeInterface <DET1>Cover <DET1>Detector -1 -1
+#/gras/analysis/tid/TID/bookHistos False
+#/gras/analysis/tid/TID/bookHistosVsPrimary False
+#/gras/analysis/tid/TID/bookTuples False
+#/gras/analysis/tid/TID/setUnit MeV
+#/gras/analysis/tid/TID/initialise
+##/gras/histo/setHistoByName TID_tid 40 0.001 10.0 MeV log
+#
+/gras/analysis/reaction/addModule RA
+/gras/analysis/reaction/RA/addVolume cherenkovRadiator_phys
+/gras/analysis/reaction/RA/bookTuples True
+/gras/analysis/reaction/RA/addProcess Cerenkov
+/gras/analysis/reaction/RA/initialise
