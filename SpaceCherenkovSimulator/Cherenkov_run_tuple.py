@@ -188,7 +188,7 @@ class pulse_height_distribution():
 
         return total_photon_inducing_event_count_per_second
 
-    def plot(self,**xargs):
+    def plot(self,return_values=False,**xargs):
 
         # self.pulse_height_values["Si_detection_probability"].hist(bins=100,**xargs)
         
@@ -201,6 +201,10 @@ class pulse_height_distribution():
         plt.ylabel("events / photon count / second")
         plt.title("pulse height distribution")
         plt.legend(loc="center left",bbox_to_anchor=(1.1,0.5))
+
+        if return_values == True:
+            return (normalised_counts / np.diff(hist_values[1]),
+                                 hist_values[1])
 
     def plot_differential_parents(self,plot_quantiles=False,**xargs):
 
@@ -538,7 +542,8 @@ class multi_Cherenkov_run_tuple(Cherenkov_run_tuple):
         coincidence_df = self.get_coincidence_DF(id1, id2, FL_or_RA)
 
         coincidence_tuple = Cherenkov_run_tuple(DF_of_output_hits=coincidence_df,
-                                                Cherenkov_run_label=f"{self.Cherenkov_run_label}, {FL_or_RA} coincidence")
+                                                Cherenkov_run_label=f"{self.Cherenkov_run_label}, {FL_or_RA} coincidence",
+                                                use_experiment_PDE=self.use_experiment_PDE)
 
         return coincidence_tuple
     
