@@ -26,7 +26,7 @@ setup(
                                             "input_macro_templates/*.in",
                                             "interplanetary_spectra/*.csv",
                                          ]},
-    version='0.2.6',
+    version='0.2.7',
     description='Python library containing tools for simulating Cherenkov detector count rates in space.',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -51,7 +51,7 @@ setup(
                         'spacepy>=0.4.1',
                         'tqdm>=4.30.0',
                         'uncertainties>=3.1.7',
-                        'uproot>=5.1.2']
+                        'uproot>=5.1.2'],
     #install_requires,
     setup_requires=['pytest-runner','wheel'],
     tests_require=['pytest'],
