@@ -1,0 +1,19 @@
+# 1st cell
+/control/alias RA RA1
+/control/alias cube_phys cube_phys1
+/control/alias FL FL1
+/control/alias sipm_phys *
+/control/execute Analysis_reaction_m.g4mac
+/control/execute Analysis_fluence_m.g4mac
+# 2st cell
+/control/alias RA RA2
+/control/alias cube_phys cube_phys2
+/control/alias FL FL2
+/control/alias sipm_phys *
+/control/execute Analysis_reaction_m.g4mac
+/control/execute Analysis_fluence_m.g4mac
+
+#/gras/histo/fileName {PARTICLE}_{ENERGY}{EUNITS}_2x1_A_{EVENTS}
+/gras/analysis/setNormalisationType PER_NB_EVENTS
+##/gras/analysis/setSourceSurfaceType AUTO
+##/gras/analysis/setSourceFluenceType FLUX
