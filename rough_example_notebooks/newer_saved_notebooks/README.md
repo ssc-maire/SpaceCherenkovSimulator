@@ -1,18 +1,17 @@
 # Comparing IRENE Models — Standalone Reproducible Run
 
-This directory contains everything needed to run the HEPI Jupyter notebooks from scratch. You must have **GRAS** (Geant4 Radiation Analysis for Space), **Geant4**, and **ROOT** installed; this code has been run with **Geant4 v10.7.4**, **GRAS 06-00-beta**, and **ROOT**.
+This directory contains everything needed to run the HEPI Jupyter notebooks from scratch. You must have **GRAS** (Geant4 Radiation Analysis for Space) and **Geant4** installed; this code has been run with **Geant4 v10.7.4** and **GRAS 06-00-beta**. **ROOT** is optional: the notebooks read GRAS output via [uproot](https://github.com/scikit-hep/uproot) (included in `requirements.txt`), so the ROOT binary is not required.
 
 ## Before you run (required dependencies)
 
-If you will run cells that execute GRAS simulations or read ROOT output, **set these environment variables first** (in the same shell/terminal you use to start Jupyter, or in your environment):
+If you will run cells that execute GRAS simulations, **set these environment variables first** (in the same shell/terminal you use to start Jupyter, or in your environment):
 
 ```bash
 export GEANT4_SH=/path/to/your/geant4/install/bin/geant4.sh
 export GRAS_ENV_SH=/path/to/your/gras/config/gras-env.sh
-export ROOT_THISROOT_SH=/path/to/your/root/bin/thisroot.sh
 ```
 
-Replace the paths with your actual Geant4, GRAS, and ROOT install locations. If any is unset when needed, the code will raise an error. See **How to run** below for full setup.
+Replace the paths with your actual Geant4 and GRAS install locations. If any is unset when needed, the code will raise an error. See **How to run** below for full setup. ROOT is optional (see **How to run**).
 
 ## Contents
 
@@ -36,15 +35,14 @@ Replace the paths with your actual Geant4, GRAS, and ROOT install locations. If 
    ```
    `requirements.txt` lists every package required by the notebooks and Python scripts (including CosRayModifiedISO, ParticleRigidityCalculationTools, AsympDirsCalculator, cartopy, sketch, etc.).
 
-3. **GRAS, Geant4, and ROOT (required for running simulations)**  
-   The notebooks need [GRAS](https://spacecraft.esa.int/projects/geant4-radiation-analysis-for-space-gras) (and its Geant4 dependency) and [ROOT](https://root.cern/). **There are no hardcoded paths:** you must set these environment variables before running cells that execute GRAS or read ROOT output:
+3. **GRAS and Geant4 (required for running simulations)**  
+   The notebooks need [GRAS](https://spacecraft.esa.int/projects/geant4-radiation-analysis-for-space-gras) (and its Geant4 dependency). **There are no hardcoded paths:** you must set these environment variables before running cells that execute GRAS:
 
    ```bash
    export GEANT4_SH=/path/to/your/geant4/install/bin/geant4.sh
    export GRAS_ENV_SH=/path/to/your/gras/config/gras-env.sh
-   export ROOT_THISROOT_SH=/path/to/your/root/bin/thisroot.sh
    ```
-   If any is unset when needed, the code will raise a clear error asking you to set it.
+   If either is unset when needed, the code will raise a clear error asking you to set it. **ROOT is optional:** ROOT output files are read via uproot (pure Python). You only need the ROOT binary and `ROOT_THISROOT_SH` if you use code paths that call the legacy `read_root_file_photon_generation` function (which the notebooks do not use).
 
 4. **Run the notebooks**  
    The notebooks do not depend on each other: each reads only the shared input data in this directory. You can run them in any order (or run any subset).
@@ -77,4 +75,5 @@ Replace the paths with your actual Geant4, GRAS, and ROOT install locations. If 
 
 ## Caching
 
-Completed GRAS runs are cached under `./Cherenkov_run_cache/` (joblib). Delete that directory to force all simulations to re-run from scratch.
+- **GRAS / Cherenkov runs:** Completed GRAS runs are cached under `./Cherenkov_run_cache/` (joblib). Delete that directory to force all simulations to re-run from scratch.
+- **Magnetocosmics (AsympDirsCalculator):** Asymptotic direction lookups are cached under `./cachedMagnetocosmicsRunData/`. Delete that directory to force magnetocosmics to re-run.
