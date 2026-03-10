@@ -12,7 +12,7 @@ authors:
   email: "f.lei@surrey.ac.uk"
 title: "SpaceCherenkovSimulator"
 type: software
-version: 0.2.11
+version: 0.2.12
 doi: 10.5281/zenodo.16845880
 date-released: 2026-03-10
 url: "https://github.com/ssc-maire/SpaceCherenkovSimulator"
