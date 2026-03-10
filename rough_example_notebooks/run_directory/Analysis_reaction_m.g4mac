@@ -1,0 +1,8 @@
+##Analysis Module RA
+####################
+/gras/analysis/reaction/addModule {RA}
+/gras/analysis/reaction/{RA}/addVolume {cube_phys} 
+/gras/analysis/reaction/{RA}/bookTuples True
+/gras/analysis/reaction/{RA}/addProcess Cerenkov
+/gras/analysis/reaction/{RA}/initialise
+#
