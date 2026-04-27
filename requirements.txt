@@ -1,4 +1,4 @@
-AsympDirsCalculator>=1.0.7
+AsympDirsCalculator>=1.1.0
 CosRayModifiedISO>=1.2
 geopandas>=0.11.1
 joblib>=1.2.0
